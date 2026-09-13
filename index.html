@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viber — профілактична розсилка</title>
+<style>
+:root {
+  --bg:#f3f5f7; --card:#fff; --text:#171717; --muted:#6b7280;
+  --line:#d9dee5; --accent:#a61e2b; --accent-soft:#f7e8ea; --ok:#157347;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
+.wrap{max-width:900px;margin:0 auto;padding:24px}
+.panel,.preview-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 6px 20px rgba(0,0,0,.05)}
+h1{font-size:25px;margin:0 0 8px}
+.desc{color:var(--muted);line-height:1.45;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:1.55fr .9fr .7fr 1.3fr;gap:12px;align-items:end}
+label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:#444}
+input{width:100%;height:43px;padding:9px 11px;border:1px solid #cfd5dc;border-radius:9px;font-size:15px;background:#fff}
+.sex-choice{height:43px;border:1px solid #cfd5dc;border-radius:9px;padding:4px;display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#fff}
+.sex-option{display:flex;align-items:center;justify-content:center;gap:7px;border-radius:7px;cursor:pointer;user-select:none;font-size:14px;margin:0}
+.sex-option input{width:16px;height:16px;margin:0;accent-color:var(--accent)}
+.sex-option:has(input:checked){background:var(--accent-soft);font-weight:700}
+.actions{margin-top:14px;display:flex;gap:10px;align-items:center}
+button{border:0;border-radius:9px;background:var(--accent);color:#fff;padding:12px 20px;font-size:15px;font-weight:700;cursor:pointer}
+button.copied{background:var(--ok)}
+.status{color:var(--muted);font-size:13px}
+.preview-card{margin-top:18px}
+.group{font-size:15px;font-weight:800;color:var(--accent);border-bottom:2px solid var(--accent-soft);padding-bottom:10px;margin-bottom:14px}
+.preview{font-size:15px;line-height:1.55}
+.preview p{margin:0 0 14px}
+.preview .service{display:flex;align-items:flex-start;gap:7px;margin:6px 0;font-weight:400}
+.preview .service-marker{
+  display:inline-block;
+  flex:0 0 auto;
+  font-size:11px;
+  line-height:1.45;
+  margin-top:2px;
+}
+
+.preview .ref-number{font-weight:400}
+
+.preview .ref-block{
+  margin-top:20px;
+  padding-top:14px;
+  border-top:1px solid #e6e9ed;
+}
+.preview .services-block{
+  margin:12px 0 2px;
+}
+
+
+.preview a{color:#1155cc}
+.warning{display:none;padding:12px;border-radius:9px;background:#fff3cd;color:#664d03;margin-top:12px}
+@media(max-width:760px){.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.grid{grid-template-columns:1fr} button{width:100%} .actions{display:block} .status{margin-top:8px}}
+
+.followup-choice{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  max-width:520px;
+}
+.followup-option{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  border:1px solid #cfd5dc;
+  border-radius:9px;
+  padding:8px 11px;
+  cursor:pointer;
+  background:#fff;
+  font-size:14px;
+  user-select:none;
+}
+.followup-option input{
+  width:16px;
+  height:16px;
+  margin:0;
+  accent-color:var(--accent);
+}
+.followup-option:has(input:checked){
+  background:var(--accent-soft);
+  font-weight:700;
+}
+.section-title{
+  font-size:13px;
+  font-weight:800;
+  color:#4b5563;
+  margin:18px 0 7px;
+}
+.secondary-btn{
+  background:#4f6775;
+}
+
+
+.main-copy-row{
+  margin-top:16px;
+  padding-bottom:16px;
+}
+.additional-box{
+  margin-top:4px;
+  padding:14px 16px;
+  border:1px solid #d8dee5;
+  border-radius:12px;
+  background:#f8fafb;
+}
+.additional-title{
+  font-size:15px;
+  font-weight:800;
+  margin-bottom:10px;
+  color:#333;
+}
+
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel">
+    <h1>Viber — профілактична розсилка</h1>
+    <div class="desc">
+      Вкажіть ім’я та по батькові, вік і номер е-направлення. 
+      Оберіть стать пацієнта. За замовчуванням вибрано «Чоловік». Шаблон підбирається автоматично.
+    </div>
+
+    <div class="grid">
+      <div>
+        <label>Ім’я та по батькові</label>
+        <input id="patient" placeholder="Олена Василівна">
+      </div>
+
+      <div>
+        <label>Стать</label>
+        <div class="sex-choice">
+          <label class="sex-option">
+            <input type="radio" name="sex" id="male" value="m" checked>
+            <span>Чоловік</span>
+          </label>
+          <label class="sex-option">
+            <input type="radio" name="sex" id="female" value="f">
+            <span>Жінка</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label>Вік</label>
+        <input id="age" type="number" min="18" max="110" value="45">
+      </div>
+
+      <div>
+        <label>Номер е-направлення</label>
+        <input id="refnum" inputmode="numeric" maxlength="19" placeholder="0000-0000-0000-0000" autocomplete="off">
+      </div>
+    </div>
+
+    <div id="warning" class="warning"></div>
+
+    <div class="actions main-copy-row">
+      <button id="copyBtn" onclick="copyMessage()">Скопіювати основне повідомлення</button>
+      <span class="status" id="status">Шаблон підбирається автоматично.</span>
+    </div>
+
+    <div class="additional-box">
+      <div class="additional-title">Додаткове повідомлення</div>
+
+      <div class="followup-choice">
+        <label class="followup-option">
+          <input type="radio" name="adpm" id="adpmMissing" value="missing" checked>
+          <span>АДП-М: актуального запису немає</span>
+        </label>
+        <label class="followup-option">
+          <input type="radio" name="adpm" id="adpmCurrent" value="current">
+          <span>Профілактика / «Доступні ліки»</span>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="copyFollowupBtn" class="secondary-btn" onclick="copyFollowup()">Скопіювати додаткове повідомлення</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-card">
+    <div id="group" class="group"></div>
+    <div id="preview" class="preview"></div>
+  </div>
+
+  <div class="preview-card additional-preview-card">
+    <div class="group">ДОДАТКОВЕ ПОВІДОМЛЕННЯ</div>
+    <div id="followupPreview" class="preview"></div>
+  </div>
+</div>
+
+<script>
+const templates = {"m_18_29": {"label": "ЧОЛОВІКИ 18–29 РОКІВ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, проводяться заходи для своєчасного виявлення захворювань та факторів ризику відповідно до віку і медичних показань.", "bold_phrases": ["наказом МОЗ України №504"], "services": ["🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "m_30_39": {"label": "ЧОЛОВІКИ 30–39 РОКІВ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, проводяться заходи для своєчасного виявлення захворювань та факторів ризику відповідно до віку і медичних показань.", "bold_phrases": ["наказом МОЗ України №504"], "services": ["🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "f_18_29": {"label": "ЖІНКИ 18–29 РОКІВ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, проводяться заходи для профілактики та раннього виявлення захворювань жіночої репродуктивної системи, а також інших захворювань відповідно до віку і медичних показань.", "bold_phrases": ["наказом МОЗ України №504", "захворювань жіночої репродуктивної системи"], "services": ["👩‍⚕️ Консультація лікаря-акушера-гінеколога", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "f_30_39": {"label": "ЖІНКИ 30–39 РОКІВ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, проводяться заходи для профілактики та раннього виявлення раку шийки матки та інших захворювань жіночої репродуктивної системи. Рентгенографія органів грудної клітки призначена окремо відповідно до медичних показань.", "bold_phrases": ["наказом МОЗ України №504", "раку шийки матки", "інших захворювань жіночої репродуктивної системи"], "services": ["👩‍⚕️ Консультація лікаря-акушера-гінеколога", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "m_40_44": {"label": "ЧОЛОВІКИ 40–44 РОКИ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, для Вашої вікової групи проводяться заходи для профілактики та раннього виявлення серцево-судинних захворювань, а також інших захворювань відповідно до медичних показань.", "bold_phrases": ["наказом МОЗ України №504", "серцево-судинних захворювань"], "services": ["🧪 Холестерин загальний", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "f_40_44": {"label": "ЖІНКИ 40–44 РОКИ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, для Вашої вікової групи проводяться заходи для профілактики та раннього виявлення раку молочної залози, раку шийки матки та колоректального раку, а також інших захворювань відповідно до медичних показань.", "bold_phrases": ["наказом МОЗ України №504", "раку молочної залози, раку шийки матки та колоректального раку"], "services": ["👩‍⚕️ Консультація лікаря-акушера-гінеколога", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "m_45_49": {"label": "ЧОЛОВІКИ 45–49 РОКІВ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, для Вашої вікової групи проводяться заходи для профілактики та раннього виявлення серцево-судинних захворювань, цукрового діабету та колоректального раку.", "bold_phrases": ["наказом МОЗ України №504", "серцево-судинних захворювань, цукрового діабету та колоректального раку"], "services": ["🧪 Глюкоза крові", "🧪 Холестерин загальний", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "f_45_49": {"label": "ЖІНКИ 45–49 РОКІВ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, для Вашої вікової групи проводяться заходи для профілактики та раннього виявлення цукрового діабету, раку молочної залози, раку шийки матки та колоректального раку.", "bold_phrases": ["наказом МОЗ України №504", "цукрового діабету, раку молочної залози, раку шийки матки та колоректального раку"], "services": ["🧪 Глюкоза крові", "👩‍⚕️ Консультація лікаря-акушера-гінеколога", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "m_50_75": {"label": "ЧОЛОВІКИ 50–75 РОКІВ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, для Вашої вікової групи проводяться заходи для профілактики та раннього виявлення серцево-судинних захворювань, цукрового діабету та колоректального раку.", "bold_phrases": ["наказом МОЗ України №504", "серцево-судинних захворювань, цукрового діабету та колоректального раку"], "services": ["🧪 Глюкоза крові", "🧪 Холестерин загальний", "🔬 Імунохімічне дослідження калу на приховану кров (FIT)", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "f_50_55": {"label": "ЖІНКИ 50–55 РОКІВ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, для Вашої вікової групи проводяться заходи для профілактики та раннього виявлення серцево-судинних захворювань, цукрового діабету, раку молочної залози, раку шийки матки та колоректального раку.", "bold_phrases": ["наказом МОЗ України №504", "серцево-судинних захворювань, цукрового діабету, раку молочної залози, раку шийки матки та колоректального раку"], "services": ["🧪 Глюкоза крові", "🧪 Холестерин загальний", "🎗️ Мамографія обох молочних залоз у двох стандартних проекціях", "🔬 Імунохімічне дослідження калу на приховану кров (FIT)", "👩‍⚕️ Консультація лікаря-акушера-гінеколога", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "f_56_69": {"label": "ЖІНКИ 56–69 РОКІВ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, для Вашої вікової групи проводяться заходи для профілактики та раннього виявлення серцево-судинних захворювань, цукрового діабету, раку молочної залози та колоректального раку.", "bold_phrases": ["наказом МОЗ України №504", "серцево-судинних захворювань, цукрового діабету, раку молочної залози та колоректального раку"], "services": ["🧪 Глюкоза крові", "🧪 Холестерин загальний", "🎗️ Мамографія обох молочних залоз у двох стандартних проекціях", "🔬 Імунохімічне дослідження калу на приховану кров (FIT)", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "any_70_75": {"label": "70–75 РОКІВ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, для Вашої вікової групи проводяться заходи для профілактики та раннього виявлення серцево-судинних захворювань, цукрового діабету та колоректального раку.", "bold_phrases": ["наказом МОЗ України №504", "серцево-судинних захворювань, цукрового діабету та колоректального раку"], "services": ["🧪 Глюкоза крові", "🧪 Холестерин загальний", "🔬 Імунохімічне дослідження калу на приховану кров (FIT)", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}, "any_76_plus": {"label": "76 РОКІВ І СТАРШЕ", "purpose": "У межах профілактичної роботи, передбаченої наказом МОЗ України №504 та іншими чинними нормативами МОЗ України, для Вашої вікової групи проводяться заходи для профілактики та раннього виявлення серцево-судинних захворювань і цукрового діабету.", "bold_phrases": ["наказом МОЗ України №504", "серцево-судинних захворювань і цукрового діабету"], "services": ["🧪 Глюкоза крові", "🧪 Холестерин загальний", "🩻 Рентгенографія органів грудної клітки (Флюорографія)"]}};
+const doctorUrl = "https://helsi.me/doctor/0d5ced8f-44d1-4fb5-aeb3-31e5e1a11740";
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+function chooseTemplate(isFemale, age) {
+  age = Number(age);
+  if (!Number.isFinite(age) || age < 18) return null;
+  if (age >= 76) return templates.any_76_plus;
+  if (age >= 70) return templates.any_70_75;
+
+  if (!isFemale) {
+    if (age <= 29) return templates.m_18_29;
+    if (age <= 39) return templates.m_30_39;
+    if (age <= 44) return templates.m_40_44;
+    if (age <= 49) return templates.m_45_49;
+    if (age <= 75) return templates.m_50_75;
+  } else {
+    if (age <= 29) return templates.f_18_29;
+    if (age <= 39) return templates.f_30_39;
+    if (age <= 44) return templates.f_40_44;
+    if (age <= 49) return templates.f_45_49;
+    if (age <= 55) return templates.f_50_55;
+    if (age <= 69) return templates.f_56_69;
+  }
+  return null;
+}
+
+function applyViberBold(text, phrases) {
+  let s = text;
+  for (const phrase of phrases || []) {
+    s = s.replace(phrase, '*' + phrase + '*');
+  }
+  return s;
+}
+
+function applyHtmlBold(text, phrases) {
+  let s = esc(text);
+  for (const phrase of phrases || []) {
+    const p = esc(phrase);
+    s = s.replace(p, '<strong>' + p + '</strong>');
+  }
+  return s;
+}
+
+
+
+function capitalizePatientName(value) {
+  return String(value || '').replace(
+    /(^|[\s-])([a-zа-яіїєґ])/giu,
+    (m, sep, ch) => sep + ch.toLocaleUpperCase('uk-UA')
+  );
+}
+
+function normalizePatientName() {
+  const input = document.getElementById('patient');
+  const formatted = capitalizePatientName(input.value);
+  if (input.value !== formatted) input.value = formatted;
+}
+
+function formatReferralNumber(value) {
+  const digits = String(value || '').replace(/\D/g, '').slice(0, 16);
+  return digits.match(/.{1,4}/g)?.join('-') || '';
+}
+
+function normalizeReferralInput() {
+  const input = document.getElementById('refnum');
+  const formatted = formatReferralNumber(input.value);
+  if (input.value !== formatted) input.value = formatted;
+}
+
+
+function lastScheduledAdpmAge(age) {
+  age = Number(age);
+  if (!Number.isFinite(age) || age < 18) return null;
+  if (age < 26) return 16;
+  return 26 + Math.floor((age - 26) / 10) * 10;
+}
+
+function viberToHtml(s) {
+  return esc(s)
+    .replace(/\*([^*]+)\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function buildFollowupData() {
+  normalizePatientName();
+  normalizePatientName();
+  const patient = document.getElementById('patient').value.trim() || '[Ім’я по батькові]';
+  const age = Number(document.getElementById('age').value);
+  const adpm = document.querySelector('input[name="adpm"]:checked').value;
+
+  if (!Number.isFinite(age) || age < 18) return null;
+
+  let plain = '';
+
+  if (adpm === 'missing') {
+    const dueAge = lastScheduledAdpmAge(age);
+
+    plain =
+`${patient}, ще окремо перевірила щеплення у Вашій електронній медичній картці.
+
+Вам зараз ${age} років. За Календарем профілактичних щеплень остання планова ревакцинація *АДП-М проти дифтерії та правця* у Вашому віці мала бути у ${dueAge} років. Актуального запису про це щеплення в електронній медичній картці не бачу.
+
+Якщо вакцинацію робили в іншому закладі, приватно, на роботі або за кордоном — надішліть, будь ласка, фото довідки або напишіть дату щеплення. Я звірю дані й внесу їх у картку, щоб вакцинацію не дублювати.
+
+Якщо щеплення не робили — напишіть, підкажу, як його надолужити.`;
+
+  } else if (age < 45) {
+
+    plain =
+`${patient}, ще один момент по профілактиці.
+
+Якщо давно не перевірялися на ВІЛ та вірусні гепатити B/C — це можна зробити конфіденційно. Особливо варто не відкладати, якщо були татуювання або пірсинг, медичні чи стоматологічні втручання, новий статевий партнер або просто давно не проходили такого тестування.
+
+Якщо для Вас це актуально — напишіть, підкажу, які саме тести можна пройти та як це організувати.`;
+
+  } else {
+
+    plain =
+`${patient}, ще корисний момент.
+
+Державна програма «Доступні ліки» останнім часом суттєво розширилася. За е-рецептом можна отримувати препарати безоплатно або з частковою доплатою при серцево-судинних захворюваннях, цукровому діабеті, астмі/ХОЗЛ та низці інших хронічних станів.
+
+Якщо у Вас є будь-яке хронічне захворювання або лікар раніше призначав лікування на тривалий час — напишіть назву захворювання чи препарату. Я перевірю, чи є можливість отримувати потрібні ліки за цією програмою.`;
+  }
+
+  return { plain, rich: `<p>${viberToHtml(plain).replace(/<br><br>/g, '</p><p>')}</p>` };
+}
+
+function buildData() {
+  const patient = document.getElementById('patient').value.trim() || '[Ім’я по батькові]';
+  const sex = document.querySelector('input[name="sex"]:checked').value;
+  const isFemale = sex === 'f';
+  const age = Number(document.getElementById('age').value);
+  normalizeReferralInput();
+  const ref = document.getElementById('refnum').value.trim() || '[0000-0000-0000-0000]';
+  const t = chooseTemplate(isFemale, age);
+  if (!t) return null;
+
+  // Viber uses *text* for bold, so copy exactly this plain text.
+  const viberPurpose = applyViberBold(t.purpose, t.bold_phrases);
+  const viberServices = t.services
+    .map(s => '✅ ' + s.replace(/^\S+\s+/, ''))
+    .join('\n');
+
+  const plain =
+`${patient}, добрий день! 👋
+
+👩‍⚕️ Я медична сестра сімейного лікаря, з яким у Вас укладена декларація, — *Дорошенка Костянтина Михайловича*.
+
+❤️ ${viberPurpose}
+
+*Лікар сформував для Вас електронне направлення:*
+
+${viberServices}
+
+🔢 *Номер е-направлення:*
+${ref}
+
+🏥 *Де пройти безоплатно:*
+у будь-якому державному, комунальному або приватному медзакладі, який має договір з НСЗУ на відповідні послуги. Під час запису повідомте номер е-направлення.
+
+🔗 *Сторінка лікаря в Helsi:*
+${doctorUrl}`;
+
+  const servicesHtml = t.services
+    .map(s => `<div class="service"><span class="service-marker">✅</span><span>${esc(s.replace(/^\S+\s+/, ''))}</span></div>`)
+    .join('');
+  const rich =
+`<p>${esc(patient)}, добрий день! 👋</p>
+<p>👩‍⚕️ Я медична сестра сімейного лікаря, з яким у Вас укладена декларація, — <strong>Дорошенка Костянтина Михайловича</strong>.</p>
+<p>❤️ ${applyHtmlBold(t.purpose, t.bold_phrases)}</p>
+<p><strong>Лікар сформував для Вас електронне направлення:</strong></p>
+<div class="services-block">${servicesHtml}</div>
+<div class="ref-block">🔢 <strong>Номер е-направлення:</strong><br><span class="ref-number">${esc(ref)}</span></div>
+<p>🏥 <strong>Де пройти безоплатно:</strong><br>
+у будь-якому державному, комунальному або приватному медзакладі, який має договір з НСЗУ на відповідні послуги. Під час запису повідомте номер е-направлення.</p>
+<p>🔗 <strong>Сторінка лікаря в Helsi:</strong><br><a href="${doctorUrl}">${doctorUrl}</a></p>
+`;
+
+  return {t, plain, rich};
+}
+
+function render() {
+  const data = buildData();
+  const warning = document.getElementById('warning');
+  const group = document.getElementById('group');
+  const preview = document.getElementById('preview');
+  const status = document.getElementById('status');
+  const followupPreview = document.getElementById('followupPreview');
+
+  if (!data) {
+    warning.style.display = 'block';
+    warning.textContent = 'Для цього віку шаблон не задано. Вкажіть вік від 18 років.';
+    group.textContent = '';
+    preview.innerHTML = '';
+    status.textContent = '';
+    followupPreview.innerHTML = '';
+    return;
+  }
+  warning.style.display = 'none';
+  group.textContent = data.t.label;
+  preview.innerHTML = data.rich;
+  status.textContent = 'Обрано: ' + data.t.label;
+  const follow = buildFollowupData();
+  followupPreview.innerHTML = follow ? follow.rich : '';
+}
+
+async function copyMessage() {
+  const data = buildData();
+  if (!data) return;
+
+  let ok = false;
+  try {
+    // Intentionally copy plain Viber markup with *...* so Viber itself applies bold.
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(data.plain);
+      ok = true;
+    }
+  } catch (e) {}
+
+  if (!ok) {
+    const ta = document.createElement('textarea');
+    ta.value = data.plain;
+    ta.style.position='fixed';
+    ta.style.left='-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { ok = document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+
+  const btn = document.getElementById('copyBtn');
+  const old = btn.textContent;
+  btn.textContent = ok ? 'Скопійовано ✓' : 'Не вдалося скопіювати';
+  if (ok) btn.classList.add('copied');
+  setTimeout(() => {
+    btn.textContent = old;
+    btn.classList.remove('copied');
+  }, 1600);
+}
+
+
+
+async function copyFollowup() {
+  const data = buildFollowupData();
+  if (!data) return;
+
+  let ok = false;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(data.plain);
+      ok = true;
+    }
+  } catch (e) {}
+
+  if (!ok) {
+    const ta = document.createElement('textarea');
+    ta.value = data.plain;
+    ta.style.position='fixed';
+    ta.style.left='-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { ok = document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+
+  const btn = document.getElementById('copyFollowupBtn');
+  const old = btn.textContent;
+  btn.textContent = ok ? 'Скопійовано ✓' : 'Не вдалося скопіювати';
+  if (ok) btn.classList.add('copied');
+  setTimeout(() => {
+    btn.textContent = old;
+    btn.classList.remove('copied');
+  }, 1600);
+}
+
+
+const patientInput = document.getElementById('patient');
+patientInput.addEventListener('input', () => {
+  normalizePatientName();
+  render();
+});
+patientInput.addEventListener('paste', () => {
+  setTimeout(() => {
+    normalizePatientName();
+    render();
+  }, 0);
+});
+
+const refInput = document.getElementById('refnum');
+refInput.addEventListener('input', () => {
+  normalizeReferralInput();
+  render();
+});
+refInput.addEventListener('paste', () => {
+  setTimeout(() => {
+    normalizeReferralInput();
+    render();
+  }, 0);
+});
+
+for (const id of ['male','female','age','adpmMissing','adpmCurrent']) {
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+}
+render();
+</script>
+</body>
+</html>
